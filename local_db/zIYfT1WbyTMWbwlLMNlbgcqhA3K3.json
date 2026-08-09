@@ -1,0 +1,253 @@
+{
+  "roadmaps": {
+    "python": {
+      "roadmap": [
+        {
+          "title": "Introduction to Python",
+          "description": "Learn the basics of Python, including data types, variables, and control structures",
+          "topics": [
+            "Introduction to Python",
+            "Setting up Python environment",
+            "Basic syntax",
+            "Data types",
+            "Variables",
+            "Operators",
+            "Control structures"
+          ]
+        },
+        {
+          "title": "Functions and Modules",
+          "description": "Understand how to write reusable code using functions and modules",
+          "topics": [
+            "Functions",
+            "Function arguments",
+            "Return types",
+            "Modules",
+            "Importing modules",
+            "Creating custom modules"
+          ]
+        },
+        {
+          "title": "Data Structures",
+          "description": "Learn about basic data structures in Python, including lists, tuples, dictionaries, and sets",
+          "topics": [
+            "Lists",
+            "Tuples",
+            "Dictionaries",
+            "Sets",
+            "List comprehension",
+            "Dictionary comprehension"
+          ]
+        },
+        {
+          "title": "Object-Oriented Programming",
+          "description": "Understand the basics of object-oriented programming in Python, including classes, objects, inheritance, and polymorphism",
+          "topics": [
+            "Classes",
+            "Objects",
+            "Constructors",
+            "Inheritance",
+            "Polymorphism",
+            "Encapsulation",
+            "Abstraction"
+          ]
+        },
+        {
+          "title": "File Input/Output and Exception Handling",
+          "description": "Learn how to read and write files, and handle exceptions in Python",
+          "topics": [
+            "File input/output",
+            "Reading from files",
+            "Writing to files",
+            "Exception handling",
+            "Try-except blocks",
+            "Error types"
+          ]
+        },
+        {
+          "title": "Introduction to Data Structures and Algorithms",
+          "description": "Learn the basics of data structures and algorithms, including arrays, linked lists, stacks, queues, trees, and graphs",
+          "topics": [
+            "Introduction to DSA",
+            "Arrays",
+            "Linked lists",
+            "Stacks",
+            "Queues",
+            "Trees",
+            "Graphs"
+          ]
+        },
+        {
+          "title": "Algorithm Analysis and Design",
+          "description": "Understand how to analyze and design algorithms, including time and space complexity, and trade-offs",
+          "topics": [
+            "Algorithm analysis",
+            "Time complexity",
+            "Space complexity",
+            "Trade-offs",
+            "Algorithm design techniques",
+            "Divide and conquer",
+            "Dynamic programming"
+          ]
+        },
+        {
+          "title": "Advanced Data Structures and Algorithms",
+          "description": "Learn advanced data structures and algorithms, including heaps, hash tables, and graph algorithms",
+          "topics": [
+            "Heaps",
+            "Hash tables",
+            "Graph algorithms",
+            "Shortest paths",
+            "Minimum spanning trees",
+            "Network flow"
+          ]
+        }
+      ],
+      "completed": [],
+      "createdAt": "2026-08-08T11:22:39.835Z"
+    },
+    "react": {
+      "roadmap": [
+        {
+          "title": "Introduction to Programming",
+          "description": "Learn the basics of programming, including data types, variables, control structures, functions, and object-oriented programming concepts",
+          "topics": [
+            "Variables",
+            "Data Types",
+            "Control Structures",
+            "Functions",
+            "Object-Oriented Programming"
+          ]
+        },
+        {
+          "title": "JavaScript Fundamentals",
+          "description": "Get familiar with JavaScript syntax, semantics, and built-in functions, including DOM manipulation and events",
+          "topics": [
+            "JavaScript Syntax",
+            "DOM Manipulation",
+            "Events",
+            "JavaScript Built-in Functions"
+          ]
+        },
+        {
+          "title": "HTML and CSS Basics",
+          "description": "Learn the basics of HTML and CSS, including structure, styling, and layout",
+          "topics": [
+            "HTML Structure",
+            "CSS Styling",
+            "CSS Layout",
+            "Responsive Design"
+          ]
+        },
+        {
+          "title": "Introduction to React",
+          "description": "Learn the basics of React, including components, props, state, and the virtual DOM",
+          "topics": [
+            "React Components",
+            "Props",
+            "State",
+            "Virtual DOM",
+            "JSX"
+          ]
+        },
+        {
+          "title": "React Components and Props",
+          "description": "Dive deeper into React components, including functional and class components, props, and state management",
+          "topics": [
+            "Functional Components",
+            "Class Components",
+            "Props",
+            "State Management",
+            "Lifecycle Methods"
+          ]
+        },
+        {
+          "title": "React State and Side Effects",
+          "description": "Learn about state management in React, including the useState and useEffect hooks",
+          "topics": [
+            "useState Hook",
+            "useEffect Hook",
+            "State Management",
+            "Side Effects"
+          ]
+        },
+        {
+          "title": "React Routing and Navigation",
+          "description": "Learn about client-side routing in React, including React Router and navigation",
+          "topics": [
+            "React Router",
+            "Client-Side Routing",
+            "Navigation",
+            "Route Parameters"
+          ]
+        },
+        {
+          "title": "React Redux and State Management",
+          "description": "Learn about state management in React using Redux, including actions, reducers, and stores",
+          "topics": [
+            "Redux Basics",
+            "Actions",
+            "Reducers",
+            "Stores",
+            "React-Redux"
+          ]
+        },
+        {
+          "title": "React Best Practices and Optimization",
+          "description": "Learn about best practices and optimization techniques for React applications, including code splitting, memoization, and performance optimization",
+          "topics": [
+            "Code Splitting",
+            "Memoization",
+            "Performance Optimization",
+            "Best Practices",
+            "Debugging"
+          ]
+        },
+        {
+          "title": "Introduction to Data Structures",
+          "description": "Learn the basics of data structures, including arrays, linked lists, stacks, and queues",
+          "topics": [
+            "Arrays",
+            "Linked Lists",
+            "Stacks",
+            "Queues",
+            "Big O Notation"
+          ]
+        },
+        {
+          "title": "Data Structures in JavaScript",
+          "description": "Learn about implementing data structures in JavaScript, including arrays, linked lists, stacks, and queues",
+          "topics": [
+            "JavaScript Arrays",
+            "JavaScript Linked Lists",
+            "JavaScript Stacks",
+            "JavaScript Queues"
+          ]
+        },
+        {
+          "title": "Algorithms and Problem-Solving",
+          "description": "Learn about algorithms and problem-solving strategies, including sorting, searching, and graph traversal",
+          "topics": [
+            "Sorting Algorithms",
+            "Searching Algorithms",
+            "Graph Traversal",
+            "Dynamic Programming",
+            "Greedy Algorithms"
+          ]
+        },
+        {
+          "title": "Data Structures and Algorithms in React",
+          "description": "Learn about applying data structures and algorithms in React applications, including optimization and performance improvement",
+          "topics": [
+            "Optimization Techniques",
+            "Performance Improvement",
+            "Data Structures in React",
+            "Algorithms in React"
+          ]
+        }
+      ],
+      "completed": [],
+      "createdAt": "2026-08-08T16:36:45.618Z"
+    }
+  }
+}
