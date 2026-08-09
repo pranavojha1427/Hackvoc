@@ -3,8 +3,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
 
+import os from 'os';
+
 // Helper to get workspace dir for a specific user
-const getWorkspaceDir = (userId: string) => path.resolve(process.cwd(), 'practice_workspace', userId);
+const getWorkspaceDir = (userId: string) => {
+    const baseDir = process.env.VERCEL || process.env.NODE_ENV === 'production' ? os.tmpdir() : process.cwd();
+    return path.resolve(baseDir, 'practice_workspace', userId);
+};
 
 // Helper to ensure path is within user's workspace (prevent directory traversal)
 function getSafePath(userId: string, reqPath: string) {

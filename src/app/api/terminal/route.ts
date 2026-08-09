@@ -5,8 +5,13 @@ import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { promisify } from 'util';
 
+import os from 'os';
+
 const execAsync = promisify(exec);
-const getWorkspaceDir = (userId: string) => path.resolve(process.cwd(), 'practice_workspace', userId);
+const getWorkspaceDir = (userId: string) => {
+    const baseDir = process.env.VERCEL || process.env.NODE_ENV === 'production' ? os.tmpdir() : process.cwd();
+    return path.resolve(baseDir, 'practice_workspace', userId);
+};
 
 export async function POST(req: Request) {
   try {
