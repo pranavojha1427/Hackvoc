@@ -21,7 +21,7 @@ export default function RoadmapPage() {
 
   const [roadmap, setRoadmap] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [completed, setCompleted] = useState<Set<number>>(new Set());
+  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function fetchRoadmap() {
@@ -34,7 +34,7 @@ export default function RoadmapPage() {
         if (data.exists && data.data) {
           // Load from Local DB
           setRoadmap(data.data.roadmap || []);
-          setCompleted(new Set(data.data.completed || []));
+          setCompletedTopics(new Set(data.data.completedTopics || []));
           setLoading(false);
         } else {
           // Generate new roadmap
@@ -73,34 +73,10 @@ export default function RoadmapPage() {
     }
   }, [language, user]);
 
-  const toggleComplete = async (index: number) => {
-    if (!user) return;
-
-    const newCompleted = new Set(completed);
-    if (newCompleted.has(index)) {
-      newCompleted.delete(index);
-    } else {
-      newCompleted.add(index);
-    }
-    
-    // Optimistic UI update
-    setCompleted(newCompleted);
-
-    // Save to Local DB
-    try {
-      await fetch('/api/db', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              userId: user.uid,
-              language,
-              action: 'update_progress',
-              data: { completed: Array.from(newCompleted) }
-          })
-      });
-    } catch (error) {
-      console.error("Error updating progress:", error);
-    }
+  // Section is automatically completed if all its topics are completed
+  const isSectionCompleted = (section: Topic) => {
+    if (!section.topics || section.topics.length === 0) return false;
+    return section.topics.every(topic => completedTopics.has(topic));
   };
 
   if (loading) {
@@ -159,7 +135,7 @@ export default function RoadmapPage() {
           }}
         >
           {roadmap.map((section, index) => {
-            const isCompleted = completed.has(index);
+            const isCompleted = isSectionCompleted(section);
             return (
               <motion.div 
                 variants={{
@@ -174,13 +150,13 @@ export default function RoadmapPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
-                      <button onClick={() => toggleComplete(index)} className="hover:scale-110 transition">
+                      <div className="hover:scale-110 transition cursor-default">
                         {isCompleted ? (
                           <CheckCircle className="text-[#00e5ff] drop-shadow-[0_0_10px_rgba(0,229,255,0.8)]" />
                         ) : (
-                          <Circle className="text-gray-500 hover:text-[#00e5ff]/50" />
+                          <Circle className="text-gray-500" />
                         )}
-                      </button>
+                      </div>
                       <span className={isCompleted ? "text-gray-300 line-through decoration-[#00e5ff]/50" : ""}>
                         {section.title}
                       </span>
@@ -192,15 +168,23 @@ export default function RoadmapPage() {
                 <div className="ml-9">
                   <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider mb-2">Topics Covered</h4>
                   <div className="flex flex-wrap gap-2">
-                    {section.topics.map((topic, tIndex) => (
+                    {section.topics.map((topic, tIndex) => {
+                      const isTopicCompleted = completedTopics.has(topic);
+                      return (
                       <Link 
                         href={`/learning/${language}/${encodeURIComponent(topic)}`}
                         key={tIndex} 
-                        className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 hover:bg-[#00e5ff] hover:border-[#00e5ff] hover:text-[#050B14] hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] rounded-full text-sm transition-all cursor-pointer"
+                        className={`px-3 py-1 border text-sm rounded-full transition-all flex items-center gap-1 cursor-pointer ${
+                          isTopicCompleted 
+                            ? "bg-[#00e5ff]/20 border-[#00e5ff] text-[#00e5ff] shadow-[0_0_10px_rgba(0,229,255,0.2)]" 
+                            : "bg-white/5 border-white/10 text-gray-300 hover:bg-[#00e5ff] hover:border-[#00e5ff] hover:text-[#050B14] hover:shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+                        }`}
                       >
                         {topic}
+                        {isTopicCompleted && <CheckCircle size={14} />}
                       </Link>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>

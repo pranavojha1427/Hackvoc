@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, BookOpen, Send, Bot, CheckCircle, XCircle, BrainCircuit } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, BookOpen, Send, Bot, CheckCircle, XCircle, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 type MCQ = {
   question: string;
@@ -30,9 +31,11 @@ export default function InteractiveLessonPage() {
   const language = decodeURIComponent(params.language as string);
   const topic = decodeURIComponent(params.topic as string);
   const router = useRouter();
+  const { user } = useAuth();
 
   const [lesson, setLesson] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [nextTopic, setNextTopic] = useState<string | null>(null);
   
   // MCQ State
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -60,6 +63,19 @@ export default function InteractiveLessonPage() {
         if (data.content && data.mcqs) {
           setLesson(data);
         }
+
+        // Fetch roadmap to find next topic
+        if (user) {
+          const dbRes = await fetch(`/api/db?userId=${user.uid}&language=${language}`);
+          const dbData = await dbRes.json();
+          if (dbData.exists && dbData.data && dbData.data.roadmap) {
+            const allTopics = dbData.data.roadmap.flatMap((section: any) => section.topics);
+            const currentIndex = allTopics.indexOf(topic);
+            if (currentIndex !== -1 && currentIndex < allTopics.length - 1) {
+              setNextTopic(allTopics[currentIndex + 1]);
+            }
+          }
+        }
       } catch (err) {
         console.error("Error:", err);
       } finally {
@@ -67,7 +83,7 @@ export default function InteractiveLessonPage() {
       }
     }
     fetchLesson();
-  }, [language, topic]);
+  }, [language, topic, user]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -82,6 +98,34 @@ export default function InteractiveLessonPage() {
     if (selectedAnswers[qIndex] === undefined) return;
     setShowResults(prev => ({ ...prev, [qIndex]: true }));
   };
+
+  const handleNextLesson = async () => {
+    if (!user) return;
+    
+    // Save completion
+    try {
+      await fetch('/api/db', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+              userId: user.uid,
+              language,
+              action: 'update_topic_progress',
+              data: { completedTopics: [topic] }
+          })
+      });
+    } catch (error) {
+      console.error("Error saving progress:", error);
+    }
+
+    if (nextTopic) {
+      router.push(`/learning/${language}/${encodeURIComponent(nextTopic)}`);
+    } else {
+      router.push(`/learning/${language}`);
+    }
+  };
+
+  const allAnswered = lesson?.mcqs && lesson.mcqs.length > 0 && Object.keys(showResults).length === lesson.mcqs.length;
 
   const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
@@ -270,8 +314,13 @@ export default function InteractiveLessonPage() {
               })}
             </div>
             
-            <div className="mt-12 flex justify-center">
-               <Link href={`/learning/${language}`} className="px-8 py-3 bg-white/[0.05] border border-white/10 hover:bg-[#00e5ff] hover:text-[#050B14] hover:border-[#00e5ff] text-white rounded-lg font-bold shadow-[0_0_15px_rgba(0,229,255,0.1)] hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition backdrop-blur-md hover:-translate-y-1">
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+               {allAnswered && (
+                 <button onClick={handleNextLesson} className="px-8 py-3 bg-[#00e5ff] hover:bg-cyan-400 text-[#050B14] rounded-lg font-bold shadow-[0_0_15px_rgba(0,229,255,0.3)] hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] transition-all hover:-translate-y-1 flex items-center gap-2">
+                   Complete & Continue <ArrowRight size={18} />
+                 </button>
+               )}
+               <Link href={`/learning/${language}`} className="px-8 py-3 bg-white/[0.05] border border-white/10 hover:bg-white/10 text-white rounded-lg font-bold transition backdrop-blur-md">
                   Return to Roadmap
                </Link>
             </div>

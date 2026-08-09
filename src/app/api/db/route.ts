@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     }
 
     if (!db.roadmaps) db.roadmaps = {};
-    if (!db.roadmaps[language]) db.roadmaps[language] = { roadmap: [], completed: [] };
+    if (!db.roadmaps[language]) db.roadmaps[language] = { roadmap: [], completed: [], completedTopics: [] };
 
     if (action === 'save_roadmap') {
         db.roadmaps[language] = {
@@ -73,6 +73,13 @@ export async function POST(req: Request) {
         db.roadmaps[language] = {
             ...db.roadmaps[language],
             completed: data.completed
+        };
+    } else if (action === 'update_topic_progress') {
+        const currentTopics = db.roadmaps[language].completedTopics || [];
+        const newTopics = Array.from(new Set([...currentTopics, ...data.completedTopics]));
+        db.roadmaps[language] = {
+            ...db.roadmaps[language],
+            completedTopics: newTopics
         };
     } else {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
