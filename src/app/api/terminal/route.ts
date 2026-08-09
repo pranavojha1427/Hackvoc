@@ -80,6 +80,12 @@ export async function POST(req: Request) {
             
             try {
                 const code = await readFile(filePath, 'utf-8');
+                let stdinData = "";
+                const stdinPath = path.resolve(currentDir, '.stdin');
+                if (existsSync(stdinPath)) {
+                    stdinData = await readFile(stdinPath, 'utf-8');
+                }
+
                 let compiler = 'gcc-head-c'; // Default C
                 if (lang === 'cpp') compiler = 'gcc-head';
                 else if (lang === 'java') compiler = 'openjdk-jdk-22+36';
@@ -92,7 +98,8 @@ export async function POST(req: Request) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         code: code,
-                        compiler: compiler
+                        compiler: compiler,
+                        stdin: stdinData
                     })
                 });
                 

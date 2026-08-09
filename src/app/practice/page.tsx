@@ -49,6 +49,7 @@ export default function PracticeMode() {
   const [debugContext, setDebugContext] = useState("");
   const [debugResult, setDebugResult] = useState("");
   const [isWaitingDebug, setIsWaitingDebug] = useState(false);
+  const [customInput, setCustomInput] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["/"]));
 
   useEffect(() => {
@@ -155,6 +156,23 @@ export default function PracticeMode() {
     
     // Auto-save before run
     await handleSave();
+
+    // Save custom input to .stdin
+    if (user) {
+        if (customInput) {
+            await fetch("/api/fs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: user.uid, action: "writefile", path: "/.stdin", content: customInput })
+            });
+        } else {
+            await fetch("/api/fs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: user.uid, action: "delete", path: "/.stdin" })
+            });
+        }
+    }
 
     // Generate command based on language
     const fullPath = activeFile.startsWith('/') ? activeFile.substring(1) : activeFile;
@@ -503,24 +521,40 @@ export default function PracticeMode() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 200, opacity: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="h-[40%] md:h-64 bg-[#0a0a0f] border-t border-white/10 flex flex-col shrink-0 relative z-10"
+              className="h-[50%] md:h-64 bg-[#0a0a0f] border-t border-white/10 flex flex-col md:flex-row shrink-0 relative z-10"
             >
-              <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
-                <TerminalSquare size={14} /> {previewContent ? "Live Preview" : "Terminal"}
+              <div className="flex-1 flex flex-col min-w-0 border-b md:border-b-0 md:border-r border-white/10 relative">
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
+                  <TerminalSquare size={14} /> {previewContent ? "Live Preview" : "Terminal"}
+                </div>
+                
+                {previewContent ? (
+                  <iframe 
+                    srcDoc={previewContent} 
+                    className="w-full h-full border-none bg-white" 
+                    title="Live Preview" 
+                  />
+                ) : (
+                  <div className="flex-grow min-h-0 relative">
+                      <Terminal 
+                          autoRunCommand={autoRunCmd} 
+                          onAutoRunComplete={() => setAutoRunCmd(null)}
+                      />
+                  </div>
+                )}
               </div>
               
-              {previewContent ? (
-                <iframe 
-                  srcDoc={previewContent} 
-                  className="w-full h-full border-none bg-white" 
-                  title="Live Preview" 
-                />
-              ) : (
-                <div className="flex-grow min-h-0 relative">
-                    <Terminal 
-                        autoRunCommand={autoRunCmd} 
-                        onAutoRunComplete={() => setAutoRunCmd(null)}
-                    />
+              {!previewContent && (
+                <div className="w-full h-1/3 md:h-full md:w-64 lg:w-80 flex flex-col shrink-0 bg-[#050B14]/30">
+                  <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
+                    Standard Input (stdin)
+                  </div>
+                  <textarea 
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    placeholder="Type input here before running..."
+                    className="flex-grow bg-transparent text-gray-300 p-3 text-sm font-mono outline-none resize-none custom-scrollbar placeholder:text-gray-600"
+                  />
                 </div>
               )}
             </motion.div>
