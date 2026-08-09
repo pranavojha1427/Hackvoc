@@ -280,7 +280,7 @@ export default function PracticeMode() {
   }
 
   return (
-    <div className="flex h-screen bg-[#050B14] text-gray-300 overflow-hidden font-sans relative">
+    <div className="flex flex-col md:flex-row h-[100dvh] bg-[#050B14] text-gray-300 overflow-hidden font-sans relative">
       
       {/* Dynamic Space Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -294,14 +294,14 @@ export default function PracticeMode() {
         initial={{ x: -250 }}
         animate={{ x: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="w-16 md:w-64 border-r border-white/10 bg-white/[0.02] backdrop-blur-md flex flex-col shrink-0 py-4 relative z-10 shadow-[2px_0_20px_rgba(0,229,255,0.02)]"
+        className="w-full md:w-64 h-32 md:h-full border-b md:border-b-0 md:border-r border-white/10 bg-white/[0.02] backdrop-blur-md flex flex-col shrink-0 py-2 md:py-4 relative z-10 shadow-[2px_0_20px_rgba(0,229,255,0.02)]"
       >
         <Link href="/" className="px-4 mb-6 flex items-center justify-center md:justify-start gap-2 hover:text-[#00e5ff] transition">
           <ArrowLeft size={20} />
           <span className="hidden md:inline font-bold text-lg">Exit</span>
         </Link>
         
-        <div className="px-4 mb-4 hidden md:flex items-center justify-between">
+        <div className="px-4 mb-2 flex items-center justify-between">
           <h2 className="text-xs uppercase font-bold text-gray-500">Explorer</h2>
           <div className="flex gap-2">
               <button onClick={createFile} className="text-gray-500 hover:text-white transition" title="New File">
@@ -322,7 +322,7 @@ export default function PracticeMode() {
       <div className="flex-grow flex flex-col min-w-0 relative z-10">
         
         {/* Toolbar */}
-        <div className="h-14 border-b border-white/10 bg-white/[0.02] backdrop-blur-md flex items-center justify-between px-4 shrink-0 relative z-10">
+        <div className="h-14 border-b border-white/10 bg-white/[0.02] backdrop-blur-md flex items-center justify-between px-2 md:px-4 shrink-0 relative z-10 overflow-x-auto custom-scrollbar">
           <div className="flex items-center gap-2">
             <span className="text-sm font-mono text-[#00e5ff] px-3 py-1 bg-[#00e5ff]/10 rounded border border-[#00e5ff]/20 shadow-[0_0_10px_rgba(0,229,255,0.1)]">
               {activeFile ? activeFile.split('/').pop() : "No file selected"}
@@ -336,7 +336,7 @@ export default function PracticeMode() {
                 isTerminalOpen ? "bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 shadow-[0_0_10px_rgba(0,229,255,0.2)]" : "bg-white/5 border border-white/10 hover:bg-white/10"
               }`}
             >
-              <TerminalSquare size={16} /> Terminal
+              <TerminalSquare size={16} /> <span className="hidden sm:inline">Terminal</span>
             </button>
             <button 
               onClick={() => setIsDebugging(!isDebugging)}
@@ -344,14 +344,14 @@ export default function PracticeMode() {
                 isDebugging ? "bg-purple-600/20 text-purple-400 border border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]" : "bg-white/5 border border-white/10 hover:bg-white/10"
               }`}
             >
-              <Bug size={16} /> Debug
+              <Bug size={16} /> <span className="hidden sm:inline">Debug</span>
             </button>
             <button 
               onClick={handleRunCode}
               disabled={isRunning || !activeFile}
               className="bg-[#00e5ff] hover:bg-cyan-400 disabled:opacity-50 text-[#050B14] px-4 py-1.5 rounded-md flex items-center gap-2 text-sm font-bold shadow-[0_0_15px_rgba(0,229,255,0.3)] transition"
             >
-              <Play size={16} fill="currentColor" /> {isRunning ? "Running..." : "Run"}
+              <Play size={16} fill="currentColor" /> <span className="hidden sm:inline">{isRunning ? "Running..." : "Run"}</span>
             </button>
           </div>
         </div>

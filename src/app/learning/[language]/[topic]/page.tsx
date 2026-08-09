@@ -116,7 +116,7 @@ export default function InteractiveLessonPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050B14] text-white flex flex-col items-center justify-center">
+      <div className="min-h-[100dvh] bg-[#050B14] text-white flex flex-col items-center justify-center px-6 text-center">
         <Loader2 className="animate-spin text-[#00e5ff] mb-6" size={64} />
         <h2 className="text-2xl font-bold mb-2">Generating Interactive Lesson...</h2>
         <p className="text-gray-400">Our AI is writing a custom tutorial and generating quizzes for {topic}.</p>
@@ -134,7 +134,7 @@ export default function InteractiveLessonPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050B14] text-gray-300 font-sans flex overflow-hidden relative">
+    <div className="h-[100dvh] bg-[#050B14] text-gray-300 font-sans flex flex-col md:flex-row overflow-hidden relative">
       
       {/* Dynamic Space Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -144,7 +144,7 @@ export default function InteractiveLessonPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-grow flex flex-col h-screen overflow-y-auto custom-scrollbar relative z-10">
+      <div className="flex-grow flex flex-col min-h-0 overflow-y-auto custom-scrollbar relative z-10">
         
         {/* Header */}
         <div className="sticky top-0 bg-[#050B14]/80 backdrop-blur-md border-b border-white/10 p-4 px-8 z-10 flex justify-between items-center">
@@ -284,7 +284,7 @@ export default function InteractiveLessonPage() {
         initial={{ x: 320 }}
         animate={{ x: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="w-80 shrink-0 bg-white/[0.02] backdrop-blur-xl border-l border-white/10 flex flex-col h-screen shadow-[inset_1px_0_20px_rgba(0,229,255,0.05)] relative z-20"
+        className="w-full md:w-80 h-[50vh] md:h-full shrink-0 bg-white/[0.02] backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 flex flex-col shadow-[inset_1px_0_20px_rgba(0,229,255,0.05)] relative z-20"
       >
         <div className="p-4 border-b border-white/10 bg-[#050B14]/50 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center text-[#00e5ff]">
