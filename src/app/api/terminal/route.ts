@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     try {
       const { stdout, stderr } = await execAsync(command, { 
           cwd: currentDir,
-          shell: 'powershell.exe'
+          shell: process.platform === 'win32' ? 'powershell.exe' : '/bin/bash'
       });
       
       // Clean up output a bit for xterm
