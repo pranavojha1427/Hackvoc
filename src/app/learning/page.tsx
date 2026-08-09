@@ -62,7 +62,7 @@ export default function LearningGateway() {
           <span className="text-sm font-medium">AI Powered Learning</span>
         </motion.div>
         
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Choose Your Language</h1>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">Choose Your Language</h1>
         <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
           Select a programming language and our AI will generate a personalized learning roadmap from the absolute basics to Data Structures and Algorithms (DSA).
         </p>
@@ -89,7 +89,7 @@ export default function LearningGateway() {
               whileTap={{ scale: 0.98 }}
               key={lang.name}
               onClick={() => setSelected(lang.name)}
-              className={`p-6 rounded-xl border transition-all duration-300 flex flex-col gap-4 ${
+              className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col gap-4 ${
                 selected === lang.name 
                   ? "bg-[#00e5ff]/10 border-[#00e5ff] shadow-[0_0_20px_rgba(0,229,255,0.3)]" 
                   : "bg-white/[0.02] border-white/10 hover:border-[#00e5ff]/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.15)] backdrop-blur-md"

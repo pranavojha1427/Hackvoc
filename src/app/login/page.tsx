@@ -54,7 +54,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-md bg-[#0a1525]/80 backdrop-blur-2xl border border-[#00e5ff]/30 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.15)] p-8 relative z-10"
+        className="w-full max-w-md bg-[#0a1525]/80 backdrop-blur-2xl border border-[#00e5ff]/30 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.15)] p-6 md:p-8 relative z-10"
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#00e5ff]/20 blur-[50px] rounded-full pointer-events-none"></div>
 
@@ -65,7 +65,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-white mb-6 text-center relative z-10">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center relative z-10">
           {isSignUp ? "Create Account" : "Welcome Back"}
         </h1>
 
