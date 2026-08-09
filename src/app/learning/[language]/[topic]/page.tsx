@@ -65,15 +65,13 @@ export default function InteractiveLessonPage() {
         }
 
         // Fetch roadmap to find next topic
-        if (user) {
-          const dbRes = await fetch(`/api/db?userId=${user.uid}&language=${language}`);
-          const dbData = await dbRes.json();
-          if (dbData.exists && dbData.data && dbData.data.roadmap) {
-            const allTopics = dbData.data.roadmap.flatMap((section: any) => section.topics);
-            const currentIndex = allTopics.indexOf(topic);
-            if (currentIndex !== -1 && currentIndex < allTopics.length - 1) {
-              setNextTopic(allTopics[currentIndex + 1]);
-            }
+        const storedRoadmap = localStorage.getItem(`roadmap_${language}`);
+        if (storedRoadmap) {
+          const parsedRoadmap = JSON.parse(storedRoadmap);
+          const allTopics = parsedRoadmap.flatMap((section: any) => section.topics);
+          const currentIndex = allTopics.indexOf(topic);
+          if (currentIndex !== -1 && currentIndex < allTopics.length - 1) {
+            setNextTopic(allTopics[currentIndex + 1]);
           }
         }
       } catch (err) {
@@ -100,20 +98,14 @@ export default function InteractiveLessonPage() {
   };
 
   const handleNextLesson = async () => {
-    if (!user) return;
-    
     // Save completion
     try {
-      await fetch('/api/db', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              userId: user.uid,
-              language,
-              action: 'update_topic_progress',
-              data: { completedTopics: [topic] }
-          })
-      });
+      const storedCompleted = localStorage.getItem(`completedTopics_${language}`);
+      let completedTopics = storedCompleted ? JSON.parse(storedCompleted) : [];
+      if (!completedTopics.includes(topic)) {
+        completedTopics.push(topic);
+        localStorage.setItem(`completedTopics_${language}`, JSON.stringify(completedTopics));
+      }
     } catch (error) {
       console.error("Error saving progress:", error);
     }

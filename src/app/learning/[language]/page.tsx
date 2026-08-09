@@ -28,13 +28,15 @@ export default function RoadmapPage() {
       if (!language || !user) return;
       
       try {
-        const res = await fetch(`/api/db?userId=${user.uid}&language=${language}`);
-        const data = await res.json();
-        
-        if (data.exists && data.data) {
-          // Load from Local DB
-          setRoadmap(data.data.roadmap || []);
-          setCompletedTopics(new Set(data.data.completedTopics || []));
+        const storedRoadmap = localStorage.getItem(`roadmap_${language}`);
+        const storedCompleted = localStorage.getItem(`completedTopics_${language}`);
+
+        if (storedRoadmap) {
+          // Load from Local Storage
+          setRoadmap(JSON.parse(storedRoadmap));
+          if (storedCompleted) {
+            setCompletedTopics(new Set(JSON.parse(storedCompleted)));
+          }
           setLoading(false);
         } else {
           // Generate new roadmap
@@ -48,17 +50,8 @@ export default function RoadmapPage() {
           if (aiData.roadmap) {
             setRoadmap(aiData.roadmap);
             
-            // Save to Local DB
-            await fetch('/api/db', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userId: user.uid,
-                    language,
-                    action: 'save_roadmap',
-                    data: { roadmap: aiData.roadmap }
-                })
-            });
+            // Save to Local Storage
+            localStorage.setItem(`roadmap_${language}`, JSON.stringify(aiData.roadmap));
           }
           setLoading(false);
         }
