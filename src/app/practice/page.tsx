@@ -166,12 +166,12 @@ export default function PracticeMode() {
     const cdCmd = folderPath ? `cd ${folderPath}; ` : "";
     
     let cmd = "";
-    if (language === "python") cmd = `${cdCmd}python ${filename}`;
-    else if (language === "javascript") cmd = `${cdCmd}node ${filename}`;
-    else if (language === "c") cmd = `${cdCmd}gcc ${filename} -o program.exe; ./program.exe`;
-    else if (language === "cpp") cmd = `${cdCmd}g++ ${filename} -o program.exe; ./program.exe`;
-    else if (language === "java") cmd = `${cdCmd}javac ${filename}; java ${filenameNoExt}`;
-    else if (language === "csharp") cmd = `${cdCmd}csc ${filename}; .\\${filenameNoExt}.exe`;
+    if (language === "python") cmd = `${cdCmd}runcode ${filename} python`;
+    else if (language === "javascript") cmd = `${cdCmd}runcode ${filename} javascript`;
+    else if (language === "c") cmd = `${cdCmd}runcode ${filename} c`;
+    else if (language === "cpp") cmd = `${cdCmd}runcode ${filename} cpp`;
+    else if (language === "java") cmd = `${cdCmd}runcode ${filename} java`;
+    else if (language === "csharp") cmd = `${cdCmd}runcode ${filename} csharp`;
     
     if (cmd) {
         setAutoRunCmd(cmd);
