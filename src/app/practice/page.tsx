@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { ArrowLeft, Play, Bug, FileCode, Folder, ChevronDown, ChevronRight, TerminalSquare, Loader2, FileCode2, FolderOpen, Plus, FolderPlus } from "lucide-react";
+import { ArrowLeft, Play, Bug, FileCode, Folder, ChevronDown, ChevronRight, TerminalSquare, Loader2, FileCode2, FolderOpen, Plus, FolderPlus, Trash2, Edit2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -235,6 +235,52 @@ export default function PracticeMode() {
     }
   };
 
+  const handleDeleteFile = async (e: React.MouseEvent, path: string, type: "file" | "directory") => {
+    e.stopPropagation();
+    if (!user) return;
+    const confirmDelete = confirm(`Are you sure you want to delete ${path}?`);
+    if (!confirmDelete) return;
+    try {
+      await fetch("/api/fs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.uid, action: "delete", path })
+      });
+      if (activeFile === path) setActiveFile(null);
+      fetchFileTree();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRenameFile = async (e: React.MouseEvent, path: string, oldName: string) => {
+    e.stopPropagation();
+    if (!user) return;
+    const newName = prompt(`Enter new name for ${oldName}:`, oldName);
+    if (!newName || newName === oldName) return;
+    
+    // Calculate new path
+    const pathParts = path.split('/');
+    pathParts.pop(); // remove old name
+    const newPath = pathParts.join('/') + '/' + newName;
+
+    try {
+      await fetch("/api/fs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.uid, action: "rename", path, newPath })
+      });
+      if (activeFile === path) {
+        setActiveFile(newPath);
+        // We should also migrate fileContents if we want to keep unsaved changes, 
+        // but for simplicity we rely on the saved content from backend on next click.
+      }
+      fetchFileTree();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const renderTree = (nodes: FileNode[], depth = 0) => {
     return nodes.map((node) => {
       const isExpanded = expandedFolders.has(node.path);
@@ -242,20 +288,39 @@ export default function PracticeMode() {
         <div key={node.path} style={{ paddingLeft: `${depth * 12}px` }}>
           <div 
             onClick={() => handleOpenFile(node)}
-            className={`flex items-center gap-2 py-2 px-2 hover:bg-white/5 rounded cursor-pointer text-sm transition ${activeFile === node.path ? 'bg-[#00e5ff]/10 text-[#00e5ff] shadow-[0_0_10px_rgba(0,229,255,0.1)] border border-[#00e5ff]/20' : 'text-gray-400'}`}
+            className={`group flex items-center justify-between py-2 px-2 hover:bg-white/5 rounded cursor-pointer text-sm transition ${activeFile === node.path ? 'bg-[#00e5ff]/10 text-[#00e5ff] shadow-[0_0_10px_rgba(0,229,255,0.1)] border border-[#00e5ff]/20' : 'text-gray-400'}`}
           >
-            {node.type === "directory" ? (
-              <>
-                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                <FolderOpen size={16} />
-              </>
-            ) : (
-              <>
-                <div className="w-[14px]"></div>
-                <FileCode2 size={16} />
-              </>
-            )}
-            <span className="truncate">{node.name}</span>
+            <div className="flex items-center gap-2 truncate">
+              {node.type === "directory" ? (
+                <>
+                  {isExpanded ? <ChevronDown size={14} className="shrink-0" /> : <ChevronRight size={14} className="shrink-0" />}
+                  <FolderOpen size={16} className="shrink-0" />
+                </>
+              ) : (
+                <>
+                  <div className="w-[14px] shrink-0"></div>
+                  <FileCode2 size={16} className="shrink-0" />
+                </>
+              )}
+              <span className="truncate">{node.name}</span>
+            </div>
+            
+            <div className="hidden group-hover:flex items-center gap-1 opacity-60 hover:opacity-100 transition pr-1">
+              <button 
+                onClick={(e) => handleRenameFile(e, node.path, node.name)} 
+                className="hover:text-blue-400 p-1"
+                title="Rename"
+              >
+                <Edit2 size={12} />
+              </button>
+              <button 
+                onClick={(e) => handleDeleteFile(e, node.path, node.type)} 
+                className="hover:text-red-400 p-1"
+                title="Delete"
+              >
+                <Trash2 size={12} />
+              </button>
+            </div>
           </div>
           {node.type === "directory" && isExpanded && node.children && (
             <div>{renderTree(node.children, depth + 1)}</div>
@@ -304,6 +369,9 @@ export default function PracticeMode() {
         <div className="px-4 mb-2 flex items-center justify-between">
           <h2 className="text-xs uppercase font-bold text-gray-500">Explorer</h2>
           <div className="flex gap-2">
+              <button onClick={() => fetchFileTree()} className="text-gray-500 hover:text-[#00e5ff] transition" title="Refresh">
+                <RefreshCw size={14} />
+              </button>
               <button onClick={createFile} className="text-gray-500 hover:text-white transition" title="New File">
                 <Plus size={16} />
               </button>

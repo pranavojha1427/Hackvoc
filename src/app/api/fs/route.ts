@@ -106,6 +106,16 @@ export async function POST(req: Request) {
        return NextResponse.json({ success: true });
     }
 
+    if (action === 'rename') {
+        const { newPath } = await req.json();
+        if (!newPath) return NextResponse.json({ error: 'newPath is required' }, { status: 400 });
+        const absoluteNewPath = getSafePath(userId, newPath);
+        if (existsSync(absolutePath)) {
+            await fs.rename(absolutePath, absoluteNewPath);
+        }
+        return NextResponse.json({ success: true });
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
 
   } catch (error: any) {
