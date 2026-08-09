@@ -4,7 +4,9 @@ import path from 'path';
 import { existsSync } from 'fs';
 
 // Database Directory
-const DB_DIR = path.resolve(process.cwd(), 'local_db');
+const DB_DIR = process.env.VERCEL || process.env.NODE_ENV === 'production' 
+  ? '/tmp' 
+  : path.resolve(process.cwd(), 'local_db');
 
 // Helper to get user's db file path
 const getUserDbPath = (userId: string) => path.join(DB_DIR, `${userId}.json`);
