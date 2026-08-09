@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Protect routes
     if (!loading && !user) {
-      if (pathname.startsWith("/learning") || pathname.startsWith("/practice")) {
+      if (pathname === "/" || pathname.startsWith("/learning") || pathname.startsWith("/practice")) {
         router.push("/login");
       }
     }

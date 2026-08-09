@@ -24,7 +24,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push("/learning");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
     }
@@ -34,7 +34,7 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      router.push("/learning");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
     }
