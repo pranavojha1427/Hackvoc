@@ -50,6 +50,7 @@ export default function PracticeMode() {
   const [debugResult, setDebugResult] = useState("");
   const [isWaitingDebug, setIsWaitingDebug] = useState(false);
   const [customInput, setCustomInput] = useState("");
+  const [showInputModal, setShowInputModal] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["/"]));
 
   useEffect(() => {
@@ -140,38 +141,58 @@ export default function PracticeMode() {
     if (ext === "html") language = "html";
 
     if (language === "html" || (ext === "jsx")) {
-      setIsTerminalOpen(true);
-      if (language === "html") {
-        setPreviewContent(code);
-      } else {
-        const html = `<!DOCTYPE html><html><head><script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script></head><body><div id="root"></div><script type="text/babel" data-type="module">${code}</script></body></html>`;
-        setPreviewContent(html);
-      }
+
+    const ext = activeFile.split('.').pop() || "";
+    const language = EXTENSION_MAP[ext];
+    if (!language) {
+      alert("Unsupported file type for running.");
       return;
     }
 
+    if (language === "html") {
+      setIsTerminalOpen(true);
+      setPreviewContent(fileContents[activeFile]);
+      return;
+    }
+
+    // Auto-save before run
+    await handleSave();
+    
+    // Check for input patterns in the code
+    const code = fileContents[activeFile] || "";
+    const needsInput = /scanf|cin|getline|input\(|sys\.stdin|Scanner|BufferedReader|ReadLine|Read\(/i.test(code);
+    
+    if (needsInput) {
+        setShowInputModal(true);
+    } else {
+        await executeRun("");
+    }
+  };
+
+  const executeRun = async (inputData: string) => {
+    if (!activeFile || !user) return;
+    
+    setShowInputModal(false);
     setIsRunning(true);
     setIsTerminalOpen(true);
     setPreviewContent("");
-    
-    // Auto-save before run
-    await handleSave();
+
+    const ext = activeFile.split('.').pop() || "";
+    const language = EXTENSION_MAP[ext];
 
     // Save custom input to .stdin
-    if (user) {
-        if (customInput) {
-            await fetch("/api/fs", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user.uid, action: "writefile", path: "/.stdin", content: customInput })
-            });
-        } else {
-            await fetch("/api/fs", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user.uid, action: "delete", path: "/.stdin" })
-            });
-        }
+    if (inputData) {
+        await fetch("/api/fs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.uid, action: "writefile", path: "/.stdin", content: inputData })
+        });
+    } else {
+        await fetch("/api/fs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.uid, action: "delete", path: "/.stdin" })
+        });
     }
 
     // Generate command based on language
@@ -179,7 +200,6 @@ export default function PracticeMode() {
     const parts = fullPath.split('/');
     const filename = parts.pop() || "";
     const folderPath = parts.join('/');
-    const filenameNoExt = filename.substring(0, filename.lastIndexOf('.'));
     
     const cdCmd = folderPath ? `cd ${folderPath}; ` : "";
     
@@ -363,6 +383,7 @@ export default function PracticeMode() {
   }
 
   return (
+    <>
     <div className="flex flex-col md:flex-row h-[100dvh] bg-[#050B14] text-gray-300 overflow-hidden font-sans relative">
       
       {/* Dynamic Space Background */}
@@ -521,40 +542,24 @@ export default function PracticeMode() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 200, opacity: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="h-[50%] md:h-64 bg-[#0a0a0f] border-t border-white/10 flex flex-col md:flex-row shrink-0 relative z-10"
+              className="h-[40%] md:h-64 bg-[#0a0a0f] border-t border-white/10 flex flex-col shrink-0 relative z-10"
             >
-              <div className="flex-1 flex flex-col min-w-0 border-b md:border-b-0 md:border-r border-white/10 relative">
-                <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
-                  <TerminalSquare size={14} /> {previewContent ? "Live Preview" : "Terminal"}
-                </div>
-                
-                {previewContent ? (
-                  <iframe 
-                    srcDoc={previewContent} 
-                    className="w-full h-full border-none bg-white" 
-                    title="Live Preview" 
-                  />
-                ) : (
-                  <div className="flex-grow min-h-0 relative">
-                      <Terminal 
-                          autoRunCommand={autoRunCmd} 
-                          onAutoRunComplete={() => setAutoRunCmd(null)}
-                      />
-                  </div>
-                )}
+              <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
+                <TerminalSquare size={14} /> {previewContent ? "Live Preview" : "Terminal"}
               </div>
               
-              {!previewContent && (
-                <div className="w-full h-1/3 md:h-full md:w-64 lg:w-80 flex flex-col shrink-0 bg-[#050B14]/30">
-                  <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-[#050B14]/50 backdrop-blur-md text-xs font-mono text-gray-400 shrink-0 z-10">
-                    Standard Input (stdin)
-                  </div>
-                  <textarea 
-                    value={customInput}
-                    onChange={(e) => setCustomInput(e.target.value)}
-                    placeholder="Type input here before running..."
-                    className="flex-grow bg-transparent text-gray-300 p-3 text-sm font-mono outline-none resize-none custom-scrollbar placeholder:text-gray-600"
-                  />
+              {previewContent ? (
+                <iframe 
+                  srcDoc={previewContent} 
+                  className="w-full h-full border-none bg-white" 
+                  title="Live Preview" 
+                />
+              ) : (
+                <div className="flex-grow min-h-0 relative">
+                    <Terminal 
+                        autoRunCommand={autoRunCmd} 
+                        onAutoRunComplete={() => setAutoRunCmd(null)}
+                    />
                 </div>
               )}
             </motion.div>
@@ -563,5 +568,48 @@ export default function PracticeMode() {
 
       </div>
     </div>
+    
+    {/* Smart Input Modal */}
+    <AnimatePresence>
+      {showInputModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="bg-[#050B14] border border-[#00e5ff]/30 p-6 rounded-xl shadow-[0_0_40px_rgba(0,229,255,0.15)] max-w-lg w-full flex flex-col"
+          >
+            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <TerminalSquare className="text-[#00e5ff]" size={20} /> Input Required
+            </h2>
+            <p className="text-gray-400 text-sm mb-4">
+              We detected that your code requires input (e.g. <code className="bg-white/10 px-1 rounded text-cyan-400">scanf</code> or <code className="bg-white/10 px-1 rounded text-cyan-400">input()</code>). Please provide all necessary inputs below, separated by spaces or newlines, before executing.
+            </p>
+            <textarea 
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              placeholder="E.g., 5 10 15..."
+              className="w-full bg-[#0a0a0f] text-gray-200 border border-white/10 rounded-lg p-3 text-sm font-mono h-32 focus:outline-none focus:border-[#00e5ff]/50 mb-4 resize-none custom-scrollbar"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setShowInputModal(false)}
+                className="px-4 py-2 rounded-md bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-medium transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => executeRun(customInput)}
+                className="px-4 py-2 rounded-md bg-[#00e5ff] hover:bg-cyan-400 text-[#050B14] text-sm font-bold shadow-[0_0_15px_rgba(0,229,255,0.3)] transition flex items-center gap-2"
+              >
+                <Play size={16} fill="currentColor" /> Run Code
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  </>
   );
 }
