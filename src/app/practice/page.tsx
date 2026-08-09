@@ -132,6 +132,7 @@ export default function PracticeMode() {
     if (!activeFile) return;
     const code = fileContents[activeFile];
     const ext = activeFile.split('.').pop() || "";
+    
     let language = "python";
     if (ext === "js" || ext === "jsx") language = "javascript";
     if (ext === "c") language = "c";
@@ -141,17 +142,13 @@ export default function PracticeMode() {
     if (ext === "html") language = "html";
 
     if (language === "html" || (ext === "jsx")) {
-
-    const ext = activeFile.split('.').pop() || "";
-    const language = EXTENSION_MAP[ext];
-    if (!language) {
-      alert("Unsupported file type for running.");
-      return;
-    }
-
-    if (language === "html") {
       setIsTerminalOpen(true);
-      setPreviewContent(fileContents[activeFile]);
+      if (language === "html") {
+        setPreviewContent(code);
+      } else {
+        const html = `<!DOCTYPE html><html><head><script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script><script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script></head><body><div id="root"></div><script type="text/babel" data-type="module">${code}</script></body></html>`;
+        setPreviewContent(html);
+      }
       return;
     }
 
@@ -159,7 +156,6 @@ export default function PracticeMode() {
     await handleSave();
     
     // Check for input patterns in the code
-    const code = fileContents[activeFile] || "";
     const needsInput = /scanf|cin|getline|input\(|sys\.stdin|Scanner|BufferedReader|ReadLine|Read\(/i.test(code);
     
     if (needsInput) {
