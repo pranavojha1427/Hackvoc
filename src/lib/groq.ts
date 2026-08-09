@@ -1,10 +1,10 @@
 import Groq from "groq-sdk";
 
 // Ensure you have NEXT_PUBLIC_GROQ_API_KEY in your .env.local
-export const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
+export const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY || process.env.GROQ_API_KEY || "dummy_key_to_pass_build" });
 
 export async function generateLearningRoadmap(language: string) {
-  const prompt = `Create a comprehensive learning roadmap for a beginner to learn ${language}, starting from absolute basics and ending with Data Structures and Algorithms (DSA). Provide the response as a JSON array where each object has a 'title' (string), 'description' (string), and 'topics' (array of strings). Return ONLY the JSON, without markdown formatting like \`\`\`json.`;
+  const prompt = `Create a comprehensive learning roadmap for a beginner to learn ${language}, starting from absolute basics and ending with Data Structures and Algorithms (DSA). ${language.toLowerCase() === 'python' ? 'Ensure that you explicitly include lessons/modules dedicated to the NumPy and Pandas libraries.' : ''} Provide the response as a JSON array where each object has a 'title' (string), 'description' (string), and 'topics' (array of strings). Return ONLY the JSON, without markdown formatting like \`\`\`json.`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({

@@ -57,7 +57,7 @@ export default function Home() {
           </div>
       </div>
 
-      {/* Giant Nebula Logo */}
+      {/* Giant Codely Logo */}
       <div className="w-full flex justify-center items-center py-12 relative z-50">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -67,7 +67,7 @@ export default function Home() {
         >
           <Sparkles className="text-[#00e5ff] w-16 h-16 md:w-24 md:h-24 drop-shadow-[0_0_30px_rgba(0,229,255,0.8)]" />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 drop-shadow-[0_0_40px_rgba(255,255,255,0.3)]">
-            Nebula
+            Codely
           </span>
         </motion.div>
       </div>
@@ -159,7 +159,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-8 text-center text-gray-500 text-sm">
-        <p>© 2026 Nebula Learning Platform. All rights reserved.</p>
+        <p>© 2026 Codely Learning Platform. All rights reserved.</p>
       </footer>
     </div>
   );

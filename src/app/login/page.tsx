@@ -61,7 +61,7 @@ export default function LoginPage() {
         <div className="flex justify-center mb-8 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/20">
             <Sparkles size={16} />
-            <span className="text-sm font-bold tracking-wider uppercase">Nebula</span>
+            <span className="text-sm font-bold tracking-wider uppercase">Codely</span>
           </div>
         </div>
 
