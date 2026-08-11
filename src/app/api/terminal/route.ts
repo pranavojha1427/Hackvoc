@@ -86,11 +86,11 @@ export async function POST(req: Request) {
                     stdinData = await readFile(stdinPath, 'utf-8');
                 }
 
-                let compiler = 'gcc-head-c'; // Default C
-                if (lang === 'cpp') compiler = 'gcc-head';
+                let compiler = 'gcc-13.2.0-c'; // Default C
+                if (lang === 'cpp') compiler = 'gcc-13.2.0';
                 else if (lang === 'java') compiler = 'openjdk-jdk-22+36';
                 else if (lang === 'csharp') compiler = 'mono-6.12.0.199';
-                else if (lang === 'python') compiler = 'cpython-head';
+                else if (lang === 'python') compiler = 'cpython-3.13.8';
                 else if (lang === 'javascript') compiler = 'nodejs-20.17.0';
 
                 const response = await fetch("https://wandbox.org/api/compile.json", {
