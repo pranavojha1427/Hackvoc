@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { Sparkles, Mail, Lock, LogIn, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import FloatingCubes from "@/components/FloatingCubes";
@@ -14,6 +15,13 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { user } = useAuth();
+  
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +32,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push("/");
+      // router.push("/") will be handled by useEffect
     } catch (err: any) {
       setError(err.message);
     }
@@ -32,10 +40,23 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
+    setError("");
     try {
       await signInWithPopup(auth, provider);
-      router.push("/");
+      // router.push("/") will be handled by useEffect
     } catch (err: any) {
+      // Ignore false-positive errors where auth succeeds in the background
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        return;
+      }
+      if (err.code === 'auth/cross-origin-opener-policy-crash') {
+        // Firebase auth may still succeed in the background via iframe.
+        // We set a small delay; if user gets logged in, the useEffect will redirect them.
+        setTimeout(() => {
+           if (!auth.currentUser) setError("Sign in failed. Please try again.");
+        }, 3000);
+        return;
+      }
       setError(err.message);
     }
   };
