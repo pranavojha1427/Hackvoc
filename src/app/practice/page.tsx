@@ -7,6 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Terminal = dynamic(() => import("@/components/Terminal"), {
   ssr: false,
@@ -521,7 +523,11 @@ export default function PracticeMode() {
                 {debugResult && (
                   <div className="p-4 bg-gray-900 rounded-lg border border-purple-500/30 shadow-inner">
                     <h4 className="font-bold text-white mb-2 flex items-center gap-2"><Bug size={14}/> Analysis:</h4>
-                    <p className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{debugResult}</p>
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {debugResult}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 )}
               </div>

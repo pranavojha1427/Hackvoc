@@ -11,6 +11,7 @@ const LANGUAGES = [
   { name: "JavaScript", icon: <Code size={24} />, desc: "The language of the web." },
   { name: "Java", icon: <Server size={24} />, desc: "Enterprise and Android apps." },
   { name: "C++", icon: <Cpu size={24} />, desc: "Game dev and high performance." },
+  { name: "C", icon: <Cpu size={24} />, desc: "Low-level system programming." },
   { name: "SQL", icon: <Database size={24} />, desc: "Database management." },
   { name: "HTML", icon: <Code size={24} />, desc: "Structure of web pages." },
   { name: "React", icon: <Code size={24} />, desc: "Modern UI development." },
