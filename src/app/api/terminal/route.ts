@@ -79,7 +79,13 @@ export async function POST(req: Request) {
             }
             
             try {
-                const code = await readFile(filePath, 'utf-8');
+                let code = await readFile(filePath, 'utf-8');
+                
+                // Wandbox defaults to prog.java, which throws an error if the class is public.
+                if (lang === 'java') {
+                    code = code.replace(/public\s+class\s+/g, 'class ');
+                }
+
                 let stdinData = "";
                 const stdinPath = path.resolve(currentDir, '.stdin');
                 if (existsSync(stdinPath)) {
